@@ -25,10 +25,27 @@ func main() {
 
 	if len(os.Args) < 2 {
 		printUsage()
+		fmt.Println("---------------------------")
 		return
 	}
 
 	command := os.Args[1]
+	if !executeCommnd(command) {
+		fmt.Printf("Command '%s' is invalid.\n", command)
+		printUsage()
+	}
+
+	if command != "list" && command != "l" {
+		if err := saveTasks(taskFileName); err != nil {
+			fmt.Println("Error while saving tasks:", err)
+		}
+	}
+
+	fmt.Println("---------------------------")
+}
+
+func executeCommnd(command string) bool {
+	commandFound := true
 	switch command {
 	case "add":
 		addCommand()
@@ -50,15 +67,11 @@ func main() {
 		clearCommand()
 	case "l":
 		listTasks()
+	default:
+		commandFound = false
 	}
 
-	if command != "list" && command != "l" {
-		if err := saveTasks(taskFileName); err != nil {
-			fmt.Println("Error while saving tasks:", err)
-		}
-	}
-
-	fmt.Println("---------------------------")
+	return commandFound
 }
 
 func addCommand() {
@@ -181,5 +194,4 @@ func printUsage() {
 	fmt.Println("-> todo delete 'name of your task'")
 	fmt.Println("-> todo toggle 'name of your task'")
 	fmt.Println("-> todo list")
-	fmt.Println("---------------------------")
 }
