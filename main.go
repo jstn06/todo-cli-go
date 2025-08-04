@@ -16,40 +16,79 @@ const taskFileName string = "tasks.json"
 var tasks []Task = []Task{}
 
 func main() {
+	fmt.Println("--------- T O D O ---------")
+
 	if err := loadTasks(taskFileName); err != nil {
 		fmt.Println("Error while loading tasks:", err)
 		os.Exit(1)
 	}
 
-	command := os.Args[1]
+	if len(os.Args) < 2 {
+		printUsage()
+		return
+	}
 
+	command := os.Args[1]
 	switch command {
 	case "add":
-		taskName := os.Args[2]
-		addTask(taskName)
-		if err := saveTasks(taskFileName); err != nil {
-			fmt.Println("Error while saving tasks:", err)
-		}
+		addCommand()
+	case "a":
+		addCommand()
 	case "delete":
-		taskName := os.Args[2]
-		deleteTask(taskName)
-		if err := saveTasks(taskFileName); err != nil {
-			fmt.Println("Error while saving tasks:", err)
-		}
+		deleteCommand()
+	case "d":
+		deleteCommand()
 	case "toggle":
-		taskName := os.Args[2]
-		toggleDone(taskName)
-		if err := saveTasks(taskFileName); err != nil {
-			fmt.Println("Error while saving tasks:", err)
-		}
+		toggleCommand()
+	case "t":
+		toggleCommand()
 	case "list":
 		listTasks()
+	case "clear":
+		clearCommand()
+	case "c":
+		clearCommand()
+	case "l":
+		listTasks()
 	}
+
+	if command != "list" && command != "l" {
+		if err := saveTasks(taskFileName); err != nil {
+			fmt.Println("Error while saving tasks:", err)
+		}
+	}
+
+	fmt.Println("---------------------------")
 }
 
-func addTask(name string) {
-	tasks = append(tasks, Task{Name: name, Done: false})
-	fmt.Printf("Task '%s' added.\n", name)
+func addCommand() {
+	if len(os.Args) < 3 {
+		fmt.Println("Usage: todo add \"Task Name\"")
+	}
+	taskName := os.Args[2]
+	tasks = append(tasks, Task{Name: taskName, Done: false})
+	fmt.Printf("Task '%s' added.\n", taskName)
+}
+
+func deleteCommand() {
+	if len(os.Args) < 3 {
+		fmt.Println("Usage: todo delete \"Task Name\"")
+	}
+	taskName := os.Args[2]
+	deleteTask(taskName)
+}
+
+func toggleCommand() {
+	if len(os.Args) < 3 {
+		fmt.Println("Usage: todo toggle \"Task Name\"")
+	}
+	taskName := os.Args[2]
+	toggleDone(taskName)
+}
+
+func clearCommand() {
+	tasks = []Task{}
+	fmt.Println("Task list cleared.")
 }
 
 func deleteTask(name string) {
@@ -57,14 +96,14 @@ func deleteTask(name string) {
 	for i, t := range tasks {
 		if name == t.Name {
 			found = true
-			fmt.Println("Deleted Task:", tasks[i].Name)
+			fmt.Printf("Task '%s' deleted.\n", tasks[i].Name)
 			tasks = append(tasks[:i], tasks[i+1:]...)
 			break
 		}
 	}
 
 	if !found {
-		fmt.Println("Task not found:", name)
+		fmt.Printf("Task '%s' not found.\n", name)
 	}
 }
 
@@ -134,4 +173,13 @@ func loadTasks(filename string) error {
 	}
 
 	return nil
+}
+
+func printUsage() {
+	fmt.Println("Usage:")
+	fmt.Println("-> todo add 'name of your task'")
+	fmt.Println("-> todo delete 'name of your task'")
+	fmt.Println("-> todo toggle 'name of your task'")
+	fmt.Println("-> todo list")
+	fmt.Println("---------------------------")
 }
