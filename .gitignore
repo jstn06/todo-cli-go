@@ -1,0 +1,8 @@
+# mac
+.DS_Store
+
+# task storage
+tasks.json
+
+# build file
+main
