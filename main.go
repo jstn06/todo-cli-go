@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	todoTools "github.com/jstn06/cli-todo/tools"
 )
 
 type Task struct {
@@ -26,7 +28,7 @@ func main() {
 	}
 
 	if len(os.Args) < 2 {
-		printUsage()
+		todoTools.PrintUsage()
 		fmt.Println("---------------------------")
 		return
 	}
@@ -34,7 +36,7 @@ func main() {
 	command := os.Args[1]
 	if !executeCommnd(command) {
 		fmt.Printf("Command '%s' is invalid.\n", command)
-		printUsage()
+		todoTools.PrintUsage()
 	}
 
 	if command != "list" && command != "l" {
@@ -216,12 +218,12 @@ func printFormattedTask(task Task, index int) {
 func saveTasks(filename string) error {
 	jsonData, err := json.MarshalIndent(tasks, "", "  ") // MarshalIndent für schön formatierte JSON
 	if err != nil {
-		return fmt.Errorf("Fehler beim Marshalling der Aufgaben: %w", err)
+		return fmt.Errorf("fehler beim Marshalling der Aufgaben: %w", err)
 	}
 
 	err = os.WriteFile(filename, jsonData, 0644) // 0644 sind Standard-Dateirechte (lesbar für alle, schreibbar für Besitzer)
 	if err != nil {
-		return fmt.Errorf("Fehler beim Schreiben der Aufgaben in die Datei: %w", err)
+		return fmt.Errorf("fehler beim schreiben der aufgaben in die datei: %w", err)
 	}
 
 	return nil
@@ -234,21 +236,13 @@ func loadTasks(filename string) error {
 			tasks = []Task{}
 			return nil
 		}
-		return fmt.Errorf("Fehler beim Lesen der Aufgaben-Datei: %w", err)
+		return fmt.Errorf("fehler beim lesen der aufgaben-Datei: %w", err)
 	}
 
 	err = json.Unmarshal(jsonData, &tasks)
 	if err != nil {
-		return fmt.Errorf("Fehler beim Unmarshalling der Aufgaben: %w", err)
+		return fmt.Errorf("fehler beim unmarshalling der aufgaben: %w", err)
 	}
 
 	return nil
-}
-
-func printUsage() {
-	fmt.Println("Usage:")
-	fmt.Println("-> todo add 'name of your task'")
-	fmt.Println("-> todo delete 'name of your task'")
-	fmt.Println("-> todo toggle 'name of your task'")
-	fmt.Println("-> todo list")
 }
