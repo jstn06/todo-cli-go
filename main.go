@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type Task struct {
@@ -78,17 +80,14 @@ func addCommand() {
 	if len(os.Args) < 3 {
 		fmt.Println("Usage: todo add \"Task Name\"")
 	}
-	taskName := os.Args[2]
-	tasks = append(tasks, Task{Name: taskName, Done: false})
-	fmt.Printf("Task '%s' added.\n", taskName)
+	addTask()
 }
 
 func deleteCommand() {
 	if len(os.Args) < 3 {
 		fmt.Println("Usage: todo delete \"Task Name\"")
 	}
-	taskName := os.Args[2]
-	deleteTask(taskName)
+	deleteTask()
 }
 
 func toggleCommand() {
@@ -104,19 +103,74 @@ func clearCommand() {
 	fmt.Println("Task list cleared.")
 }
 
-func deleteTask(name string) {
-	found := false
-	for i, t := range tasks {
-		if name == t.Name {
-			found = true
-			fmt.Printf("Task '%s' deleted.\n", tasks[i].Name)
-			tasks = append(tasks[:i], tasks[i+1:]...)
-			break
-		}
+func addTask() {
+	argList := []string{}
+	for i := 2; i < len(os.Args); i++ {
+		argList = append(argList, os.Args[i])
+	}
+	taskName := strings.Join(argList, " ")
+
+	tasks = append(tasks, Task{Name: taskName, Done: false})
+	fmt.Printf("Task '%s' added.\n", taskName)
+}
+
+func deleteTask() {
+	taskNameOrIndex := os.Args[2]
+
+	deleted, name := deleteTaskByIndex(taskNameOrIndex)
+	if !deleted {
+		deleted, name = deleteTaskByName(taskNameOrIndex)
 	}
 
-	if !found {
-		fmt.Printf("Task '%s' not found.\n", name)
+	if deleted {
+		fmt.Printf("Task '%s' deleted.\n", name)
+	} else {
+		fmt.Printf("Task '%s' not found.\n", taskNameOrIndex)
+	}
+}
+
+func deleteTaskByIndex(taskNameOrIndex string) (bool, string) {
+	deleted := false
+	name := ""
+
+	findTaskByIndex(taskNameOrIndex, func(taskIndex int) {
+		name = tasks[taskIndex].Name
+		tasks = append(tasks[:taskIndex], tasks[taskIndex+1:]...)
+		deleted = true
+	})
+
+	return deleted, name
+}
+
+func findTaskByIndex(index string, op func(taskIndex int)) {
+	if len(os.Args) == 3 {
+		taskIndex, err := strconv.Atoi(index)
+		taskIndex--
+		if err == nil && taskIndex >= 0 && taskIndex < len(tasks) {
+			op(taskIndex)
+		}
+	}
+}
+
+func deleteTaskByName(taskName string) (bool, string) {
+	deleted := false
+	name := ""
+
+	findTaskByName(taskName, func(taskIndex int) {
+		name = tasks[taskIndex].Name
+		tasks = append(tasks[:taskIndex], tasks[taskIndex+1:]...)
+		deleted = true
+	})
+
+	return deleted, name
+}
+
+func findTaskByName(name string, op func(taskIndex int)) {
+	for i, t := range tasks {
+		if name == t.Name {
+			op(i)
+			break
+		}
 	}
 }
 
@@ -125,9 +179,12 @@ func toggleDone(name string) {
 	for i, t := range tasks {
 		if name == t.Name {
 			found = true
+			if tasks[i].Done {
+				fmt.Printf("Task '%s' unchecked.\n", name)
+			} else {
+				fmt.Printf("Task '%s' checked.\n", name)
+			}
 			tasks[i].Done = !tasks[i].Done
-			fmt.Println("Updated Task Done State:")
-			printFormattedTask(tasks[i])
 			break
 		}
 	}
@@ -142,18 +199,18 @@ func listTasks() {
 		fmt.Println("Task list is empty.")
 	}
 
-	for _, task := range tasks {
-		printFormattedTask(task)
+	for i, task := range tasks {
+		printFormattedTask(task, i+1)
 	}
 }
 
-func printFormattedTask(task Task) {
+func printFormattedTask(task Task, index int) {
 	doneMarker := " "
 	if task.Done {
 		doneMarker = "X"
 	}
 
-	fmt.Printf("[%s]: %s\n", doneMarker, task.Name)
+	fmt.Printf("[%s]: %d. %s\n", doneMarker, index, task.Name)
 }
 
 func saveTasks(filename string) error {
