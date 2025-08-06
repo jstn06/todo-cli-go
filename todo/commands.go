@@ -2,7 +2,6 @@ package todo
 
 import (
 	"fmt"
-	"strings"
 )
 
 func (tl *TaskList) HandleCommand(args []string) {
@@ -45,8 +44,7 @@ func (tl *TaskList) addCommand(args []string) error {
 		return fmt.Errorf("missing task name for 'add'")
 	}
 
-	taskName := strings.Join(args, " ")
-	tl.addTask(taskName)
+	tl.addTask(args)
 	return nil
 }
 
@@ -64,8 +62,7 @@ func (tl *TaskList) toggleCommand(args []string) error {
 		return fmt.Errorf("missing task name for 'toggle'")
 	}
 
-	taskName := strings.Join(args, " ")
-	tl.toggleTask(taskName)
+	tl.toggleTask(args)
 	return nil
 }
 

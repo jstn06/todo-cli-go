@@ -1,25 +1,30 @@
 package todo
 
 import (
+	"fmt"
 	"strconv"
 )
 
-func (tl TaskList) findTaskByHumanIndex(index string) (int, bool) {
+func (tl TaskList) findTaskByHumanIndex(index string) (int, error) {
 	taskIndex, err := strconv.Atoi(index)
-	taskIndex--
-	if err == nil && taskIndex >= 0 && taskIndex < len(tl) {
-		return taskIndex, true
+	if err != nil {
+		return -1, fmt.Errorf("'%s' is not a valid number", index)
 	}
 
-	return -1, false
+	taskIndex--
+	if taskIndex < 0 || taskIndex >= len(tl) {
+		return -1, fmt.Errorf("index out of range")
+	}
+
+	return taskIndex, nil
 }
 
-func (tl TaskList) findTaskByName(name string) (int, bool) {
+func (tl TaskList) findTaskByName(name string) (int, error) {
 	for i, t := range tl {
 		if name == t.Name {
-			return i, true
+			return i, nil
 		}
 	}
 
-	return -1, false
+	return -1, fmt.Errorf("task called '%s' not found", name)
 }
