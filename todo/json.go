@@ -6,13 +6,15 @@ import (
 	"os"
 )
 
-func (tasks TaskList) SaveTasks(filename string) error {
+const taskFileName string = "tasks.json"
+
+func (tasks TaskList) SaveTasks() error {
 	jsonData, err := json.MarshalIndent(tasks, "", "  ") // MarshalIndent für schön formatierte JSON
 	if err != nil {
 		return fmt.Errorf("fehler beim marshalling der aufgaben: %w", err)
 	}
 
-	err = os.WriteFile(filename, jsonData, 0644) // 0644 sind Standard-Dateirechte (lesbar für alle, schreibbar für Besitzer)
+	err = os.WriteFile(taskFileName, jsonData, 0644) // 0644 sind Standard-Dateirechte (lesbar für alle, schreibbar für Besitzer)
 	if err != nil {
 		return fmt.Errorf("fehler beim schreiben der aufgaben in die datei: %w", err)
 	}
@@ -20,8 +22,8 @@ func (tasks TaskList) SaveTasks(filename string) error {
 	return nil
 }
 
-func (tasks *TaskList) LoadTasks(filename string) error {
-	jsonData, err := os.ReadFile(filename)
+func (tasks *TaskList) LoadTasks() error {
+	jsonData, err := os.ReadFile(taskFileName)
 	if err != nil {
 		if os.IsNotExist(err) {
 			*tasks = TaskList{}

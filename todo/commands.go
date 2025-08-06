@@ -12,14 +12,14 @@ func (tl *TaskList) HandleCommand() {
 	}
 
 	command := os.Args[1]
-	if !tl.executeCommnd(command) {
+	if !tl.executeCommand(command) {
 		fmt.Printf("Command '%s' is invalid.\n", command)
 		PrintUsage()
 		return
 	}
 }
 
-func (tl *TaskList) executeCommnd(command string) bool {
+func (tl *TaskList) executeCommand(command string) bool {
 	commandFound := true
 	switch command {
 	case "add":
