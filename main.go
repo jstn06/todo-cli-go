@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jstn06/cli-todo/todo"
+	"github.com/jstn06/todo-cli-go/todo"
 )
 
 func main() {
