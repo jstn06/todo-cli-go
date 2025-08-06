@@ -1,8 +1,6 @@
-package tools
+package todo
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func PrintUsage() {
 	fmt.Println("Usage:")
