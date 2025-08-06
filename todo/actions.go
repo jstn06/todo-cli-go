@@ -21,8 +21,9 @@ func (tl *TaskList) deleteTask(args []string) {
 		return
 	}
 
+	taskName := (*tl)[index].Name
 	*tl = append((*tl)[:index], (*tl)[index+1:]...)
-	fmt.Printf("Task '%s' deleted.\n", taskNameOrIndex)
+	fmt.Printf("Task '%s' deleted.\n", taskName)
 }
 
 func (tl *TaskList) toggleTask(args []string) {
@@ -34,10 +35,11 @@ func (tl *TaskList) toggleTask(args []string) {
 		return
 	}
 
+	taskName := (*tl)[index].Name
 	if (*tl)[index].Done {
-		fmt.Printf("Task '%s' unchecked.\n", taskNameOrIndex)
+		fmt.Printf("Task '%s' unchecked.\n", taskName)
 	} else {
-		fmt.Printf("Task '%s' checked.\n", taskNameOrIndex)
+		fmt.Printf("Task '%s' checked.\n", taskName)
 	}
 	(*tl)[index].Done = !(*tl)[index].Done
 }
