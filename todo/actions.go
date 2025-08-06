@@ -2,6 +2,7 @@ package todo
 
 import (
 	"fmt"
+	"strings"
 )
 
 func (tl *TaskList) addTask(name string) {
@@ -9,43 +10,21 @@ func (tl *TaskList) addTask(name string) {
 	fmt.Printf("Task '%s' added.\n", name)
 }
 
-func (tl *TaskList) deleteTask(taskNameOrIndex string) {
-	deleted, name := tl.deleteTaskByIndex(taskNameOrIndex)
-	if !deleted {
-		deleted, name = tl.deleteTaskByName(taskNameOrIndex)
+func (tl *TaskList) deleteTask(args []string) {
+	taskNameOrIndex := strings.Join(args, " ")
+
+	index, found := tl.findTaskByHumanIndex(taskNameOrIndex)
+	if !found {
+		index, found = tl.findTaskByName(taskNameOrIndex)
 	}
 
-	if deleted {
+	if found {
+		name := (*tl)[index].Name
+		*tl = append((*tl)[:index], (*tl)[index+1:]...)
 		fmt.Printf("Task '%s' deleted.\n", name)
 	} else {
 		fmt.Printf("Task '%s' not found.\n", taskNameOrIndex)
 	}
-}
-
-func (tl *TaskList) deleteTaskByIndex(taskNameOrIndex string) (bool, string) {
-	deleted := false
-	name := ""
-
-	tl.findTaskByIndex(taskNameOrIndex, func(taskIndex int) {
-		name = (*tl)[taskIndex].Name
-		*tl = append((*tl)[:taskIndex], (*tl)[taskIndex+1:]...)
-		deleted = true
-	})
-
-	return deleted, name
-}
-
-func (tl *TaskList) deleteTaskByName(taskName string) (bool, string) {
-	deleted := false
-	name := ""
-
-	tl.findTaskByName(taskName, func(taskIndex int) {
-		name = (*tl)[taskIndex].Name
-		*tl = append((*tl)[:taskIndex], (*tl)[taskIndex+1:]...)
-		deleted = true
-	})
-
-	return deleted, name
 }
 
 func (tl *TaskList) toggleTask(name string) {

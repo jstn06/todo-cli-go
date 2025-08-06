@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -16,7 +15,7 @@ func (tl *TaskList) HandleCommand(args []string) {
 	err := tl.dispatchCommand(commandArgs)
 
 	if err != nil {
-		fmt.Printf("Fehler: %v\n\n", err)
+		fmt.Printf("Error: %v\n\n", err)
 		PrintUsage()
 	}
 }
@@ -43,7 +42,7 @@ func (tl *TaskList) dispatchCommand(args []string) error {
 
 func (tl *TaskList) addCommand(args []string) error {
 	if len(args) < 1 {
-		return errors.New("missing task name for 'add'")
+		return fmt.Errorf("missing task name for 'add'")
 	}
 
 	taskName := strings.Join(args, " ")
@@ -53,17 +52,16 @@ func (tl *TaskList) addCommand(args []string) error {
 
 func (tl *TaskList) deleteCommand(args []string) error {
 	if len(args) < 1 {
-		return errors.New("missing task name for 'delete'")
+		return fmt.Errorf("missing task name for 'delete'")
 	}
 
-	taskNameOrIndex := strings.Join(args, " ")
-	tl.deleteTask(taskNameOrIndex)
+	tl.deleteTask(args)
 	return nil
 }
 
 func (tl *TaskList) toggleCommand(args []string) error {
 	if len(args) < 1 {
-		return errors.New("missing task name for 'toggle'")
+		return fmt.Errorf("missing task name for 'toggle'")
 	}
 
 	taskName := strings.Join(args, " ")
