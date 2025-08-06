@@ -23,7 +23,7 @@ func (tl *TaskList) dispatchCommand(args []string) error {
 	command := args[0]
 	commandArgs := args[1:]
 
-	switch args[0] {
+	switch command {
 	case "add", "a":
 		return tl.addCommand(commandArgs)
 	case "delete", "d":
