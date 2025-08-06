@@ -5,24 +5,34 @@ import (
 	"strconv"
 )
 
-func (tl TaskList) findTaskByHumanIndex(index string) (int, error) {
-	taskIndex, err := strconv.Atoi(index)
-	if err != nil {
-		return -1, fmt.Errorf("'%s' is not a valid number", index)
+func (tl TaskList) findTask(taskNameOrIndex string) (int, error) {
+	index, err := tl.findTaskByHumanIndex(taskNameOrIndex)
+
+	if err == nil {
+		return index, nil
 	}
 
-	taskIndex--
-	if taskIndex < 0 || taskIndex >= len(tl) {
+	return tl.findTaskByName(taskNameOrIndex)
+}
+
+func (tl TaskList) findTaskByHumanIndex(taskIndex string) (int, error) {
+	index, err := strconv.Atoi(taskIndex)
+	if err != nil {
+		return -1, fmt.Errorf("'%s' is not a valid number", taskIndex)
+	}
+
+	index--
+	if index < 0 || index >= len(tl) {
 		return -1, fmt.Errorf("index out of range")
 	}
 
-	return taskIndex, nil
+	return index, nil
 }
 
 func (tl TaskList) findTaskByName(name string) (int, error) {
-	for i, t := range tl {
-		if name == t.Name {
-			return i, nil
+	for index, task := range tl {
+		if name == task.Name {
+			return index, nil
 		}
 	}
 
