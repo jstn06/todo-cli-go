@@ -21,5 +21,5 @@ func main() {
 
 	taskList.SaveTasks()
 
-	fmt.Println("---------------------------")
+	todo.PrintSeparator()
 }

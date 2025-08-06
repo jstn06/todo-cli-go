@@ -9,7 +9,7 @@ type Task struct {
 
 type TaskList []Task
 
-func (tasks TaskList) listTasks() {
+func (tasks TaskList) listTasks() error {
 	if len(tasks) == 0 {
 		fmt.Println("Task list is empty.")
 	}
@@ -17,6 +17,8 @@ func (tasks TaskList) listTasks() {
 	for i, task := range tasks {
 		printFormattedTask(task, i+1)
 	}
+
+	return nil
 }
 
 func printFormattedTask(task Task, index int) {

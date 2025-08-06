@@ -1,7 +1,9 @@
 package todo
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 )
 
 func (tl *TaskList) HandleCommand(args []string) {
@@ -11,71 +13,66 @@ func (tl *TaskList) HandleCommand(args []string) {
 	}
 
 	commandArgs := args[1:]
-	if !tl.executeCommand(commandArgs) {
-		fmt.Printf("Command '%s' is invalid.\n", commandArgs[0])
+	err := tl.dispatchCommand(commandArgs)
+
+	if err != nil {
+		fmt.Printf("Fehler: %v\n\n", err)
 		PrintUsage()
-		return
 	}
 }
 
-func (tl *TaskList) executeCommand(args []string) bool {
-	commandFound := true
+func (tl *TaskList) dispatchCommand(args []string) error {
+	command := args[0]
+	commandArgs := args[1:]
+
 	switch args[0] {
-	case "add":
-		tl.addCommand(args)
-	case "a":
-		tl.addCommand(args)
-	case "delete":
-		tl.deleteCommand(args)
-	case "d":
-		tl.deleteCommand(args)
-	case "toggle":
-		tl.toggleCommand(args)
-	case "t":
-		tl.toggleCommand(args)
-	case "clear":
-		tl.clearCommand()
-	case "c":
-		tl.clearCommand()
-	case "list":
-		tl.listTasks()
-	case "l":
-		tl.listTasks()
+	case "add", "a":
+		return tl.addCommand(commandArgs)
+	case "delete", "d":
+		return tl.deleteCommand(commandArgs)
+	case "toggle", "t":
+		return tl.toggleCommand(commandArgs)
+	case "clear", "c":
+		return tl.clearCommand()
+	case "list", "l":
+		return tl.listTasks()
 	default:
-		commandFound = false
+		return fmt.Errorf("invalid command '%s'", command)
 	}
-
-	return commandFound
 }
 
-func (tl *TaskList) addCommand(args []string) {
-	if len(args) < 2 {
-		fmt.Println("Usage: todo add \"Task Name\"")
+func (tl *TaskList) addCommand(args []string) error {
+	if len(args) < 1 {
+		return errors.New("missing task name for 'add'")
 	}
 
-	taskName := argsToTaskName(args)
+	taskName := strings.Join(args, " ")
 	tl.addTask(taskName)
+	return nil
 }
 
-func (tl *TaskList) deleteCommand(args []string) {
-	if len(args) < 2 {
-		fmt.Println("Usage: todo delete \"Task Name\"")
+func (tl *TaskList) deleteCommand(args []string) error {
+	if len(args) < 1 {
+		return errors.New("missing task name for 'delete'")
 	}
 
-	taskNameOrIndex := args[1]
+	taskNameOrIndex := strings.Join(args, " ")
 	tl.deleteTask(taskNameOrIndex)
+	return nil
 }
 
-func (tl *TaskList) toggleCommand(args []string) {
-	if len(args) < 3 {
-		fmt.Println("Usage: todo toggle \"Task Name\"")
+func (tl *TaskList) toggleCommand(args []string) error {
+	if len(args) < 1 {
+		return errors.New("missing task name for 'toggle'")
 	}
 
-	taskName := argsToTaskName(args)
+	taskName := strings.Join(args, " ")
 	tl.toggleTask(taskName)
+	return nil
 }
 
-func (tl *TaskList) clearCommand() {
+func (tl *TaskList) clearCommand() error {
 	*tl = TaskList{}
 	fmt.Println("Task list cleared.")
+	return nil
 }

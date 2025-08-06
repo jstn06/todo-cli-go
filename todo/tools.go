@@ -3,7 +3,6 @@ package todo
 import (
 	"os"
 	"strconv"
-	"strings"
 )
 
 func (tl TaskList) findTaskByIndex(index string, op func(taskIndex int)) {
@@ -23,12 +22,4 @@ func (tl TaskList) findTaskByName(name string, op func(taskIndex int)) {
 			break
 		}
 	}
-}
-
-func argsToTaskName(args []string) string {
-	argList := []string{}
-	for i := 2; i < len(args); i++ {
-		argList = append(argList, args[i])
-	}
-	return strings.Join(argList, " ")
 }
