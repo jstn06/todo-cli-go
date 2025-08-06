@@ -2,38 +2,37 @@ package todo
 
 import (
 	"fmt"
-	"os"
 )
 
-func (tl *TaskList) HandleCommand() {
-	if len(os.Args) < 2 {
+func (tl *TaskList) HandleCommand(args []string) {
+	if len(args) < 2 {
 		PrintUsage()
 		return
 	}
 
-	command := os.Args[1]
-	if !tl.executeCommand(command) {
-		fmt.Printf("Command '%s' is invalid.\n", command)
+	commandArgs := args[1:]
+	if !tl.executeCommand(commandArgs) {
+		fmt.Printf("Command '%s' is invalid.\n", commandArgs[0])
 		PrintUsage()
 		return
 	}
 }
 
-func (tl *TaskList) executeCommand(command string) bool {
+func (tl *TaskList) executeCommand(args []string) bool {
 	commandFound := true
-	switch command {
+	switch args[0] {
 	case "add":
-		tl.addCommand()
+		tl.addCommand(args)
 	case "a":
-		tl.addCommand()
+		tl.addCommand(args)
 	case "delete":
-		tl.deleteCommand()
+		tl.deleteCommand(args)
 	case "d":
-		tl.deleteCommand()
+		tl.deleteCommand(args)
 	case "toggle":
-		tl.toggleCommand()
+		tl.toggleCommand(args)
 	case "t":
-		tl.toggleCommand()
+		tl.toggleCommand(args)
 	case "clear":
 		tl.clearCommand()
 	case "c":
@@ -49,30 +48,30 @@ func (tl *TaskList) executeCommand(command string) bool {
 	return commandFound
 }
 
-func (tl *TaskList) addCommand() {
-	if len(os.Args) < 3 {
+func (tl *TaskList) addCommand(args []string) {
+	if len(args) < 2 {
 		fmt.Println("Usage: todo add \"Task Name\"")
 	}
 
-	taskName := argsToTaskName()
+	taskName := argsToTaskName(args)
 	tl.addTask(taskName)
 }
 
-func (tl *TaskList) deleteCommand() {
-	if len(os.Args) < 3 {
+func (tl *TaskList) deleteCommand(args []string) {
+	if len(args) < 2 {
 		fmt.Println("Usage: todo delete \"Task Name\"")
 	}
 
-	taskNameOrIndex := os.Args[2]
+	taskNameOrIndex := args[1]
 	tl.deleteTask(taskNameOrIndex)
 }
 
-func (tl *TaskList) toggleCommand() {
-	if len(os.Args) < 3 {
+func (tl *TaskList) toggleCommand(args []string) {
+	if len(args) < 3 {
 		fmt.Println("Usage: todo toggle \"Task Name\"")
 	}
 
-	taskName := argsToTaskName()
+	taskName := argsToTaskName(args)
 	tl.toggleTask(taskName)
 }
 

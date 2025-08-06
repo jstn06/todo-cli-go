@@ -25,10 +25,10 @@ func (tl TaskList) findTaskByName(name string, op func(taskIndex int)) {
 	}
 }
 
-func argsToTaskName() string {
+func argsToTaskName(args []string) string {
 	argList := []string{}
-	for i := 2; i < len(os.Args); i++ {
-		argList = append(argList, os.Args[i])
+	for i := 2; i < len(args); i++ {
+		argList = append(argList, args[i])
 	}
 	return strings.Join(argList, " ")
 }

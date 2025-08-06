@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jstn06/cli-todo/todo"
@@ -13,11 +14,10 @@ func main() {
 	fmt.Println("--------- T O D O ---------")
 
 	if err := taskList.LoadTasks(); err != nil {
-		fmt.Println("Error while loading tasks:", err)
-		os.Exit(1)
+		log.Fatal("Error while loading tasks:", err)
 	}
 
-	taskList.HandleCommand()
+	taskList.HandleCommand(os.Args)
 
 	taskList.SaveTasks()
 
